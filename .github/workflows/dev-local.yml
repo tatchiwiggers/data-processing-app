@@ -42,10 +42,6 @@ jobs:
         nohup poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 &
         sleep 5  # Aguarda o servidor subir completamente
 
-    - name: Test FastAPI endpoint
-      run: |
-        curl -f http://127.0.0.1:8000/ | grep "Hello, World!"
-
     - name: Test FastAPI with pytest
       run: |
         export PATH="$HOME/.local/bin:$PATH"
