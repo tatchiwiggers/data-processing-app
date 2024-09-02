@@ -46,7 +46,3 @@ jobs:
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         poetry run pytest
-
-    - name: Stop FastAPI server
-      run: |
-        pkill -f "uvicorn"
