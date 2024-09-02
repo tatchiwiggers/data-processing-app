@@ -1,0 +1,56 @@
+name: FastApi CI Dev - Local
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  test-local:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        export PATH="$HOME/.local/bin:$PATH"
+        poetry --version
+
+    - name: Install dependencies with Poetry
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        poetry install
+
+    - name: Start FastAPI server
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        nohup poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 &
+        sleep 5  # Aguarda o servidor subir completamente
+
+    - name: Test FastAPI endpoint
+      run: |
+        curl -f http://127.0.0.1:8000/ | grep "Hello, World!"
+
+    - name: Test FastAPI with pytest
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        poetry run pytest
+
+    - name: Stop FastAPI server
+      run: |
+        pkill -f "uvicorn"
