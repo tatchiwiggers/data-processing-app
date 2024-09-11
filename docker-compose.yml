@@ -1,13 +1,22 @@
 version: '3.8'
 
 services:
-  app:
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: fastapi_app
+  #   environment:
+  #     - PYTHONUNBUFFERED=1
+  #   command: poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+  #   ports:
+  #     - "8000:8000"
+  app_mercado_livre:
+    image: app_mercado_livre:latest
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: fastapi_app
+      dockerfile: docker/webscraping-ml/Dockerfile
+    container_name: app_mercado_livre
     environment:
       - PYTHONUNBUFFERED=1
-    command: poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-    ports:
-      - "8000:8000"
+    # command: poetry run python app.py
