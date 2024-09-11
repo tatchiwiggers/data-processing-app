@@ -38,7 +38,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 import undetected_chromedriver as uc
 from pyvirtualdisplay import Display
-from pydantic import BaseModel, EmailStr
 from bs4 import BeautifulSoup
 import requests
 import json
@@ -47,7 +46,7 @@ import json
 logging.basicConfig(level=logging.INFO)
 
 
-class SeleniumDriverManager:
+class BeautifulSoupDriverManager:
     def __init__(self, driver_type: int = 1, show_browser: bool = True):
         self.driver_type = driver_type
         self.show_browser = show_browser
@@ -187,5 +186,4 @@ if __name__ == "__main__":
     logging.info(f"Scraped {len(products)} products.")
     if products:
         for product in products:
-            # Convert the product to a dictionary and format the JSON with indent
             logging.info(json.dumps(product.dict(), indent=2))
