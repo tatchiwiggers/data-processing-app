@@ -28,7 +28,7 @@ import os
 import logging
 from typing import List, Optional
 from time import sleep
-from models.schema import ProductData
+from schema import ProductData
 
 from pydantic import HttpUrl
 from selenium import webdriver
