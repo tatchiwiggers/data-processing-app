@@ -23,9 +23,9 @@ jobs:
       run: |
         docker-compose up --build -d
 
-    - name: Run Python Script inside Docker [app_mercado_livre]
-      run: |
-        docker-compose exec -T app_mercado_livre python /app/app.py
+    # - name: Run Python Script inside Docker [app_mercado_livre]
+    #   run: |
+    #     docker-compose exec -T app_mercado_livre python /app/app.py
 
     - name: Generate UUID Version
       id: uuid_version
