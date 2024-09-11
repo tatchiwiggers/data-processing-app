@@ -28,6 +28,7 @@ import os
 import logging
 from typing import List, Optional
 from time import sleep
+from models.schema import ProductData
 
 from pydantic import HttpUrl
 from selenium import webdriver
@@ -44,35 +45,6 @@ import json
 
 
 logging.basicConfig(level=logging.INFO)
-
-
-class WebDriverConfig(BaseModel):
-    driver_path: str
-    headless: bool = False
-
-
-class ProductData(BaseModel):
-    product_link: str
-    product_image: str
-    product_title: str
-    previous_price: str
-    current_price: str
-    discount: str
-    installments: str
-    seller: str
-
-
-class UserBase(BaseModel):
-    username: str
-    email: EmailStr
-
-
-class UserCreate(UserBase):
-    password: str
-
-
-class User(UserBase):
-    id: int
 
 
 class SeleniumDriverManager:
@@ -157,7 +129,6 @@ class WebScraper:
 
         soup = BeautifulSoup(html, "html.parser")
 
-        # Modify the class names and structure as per the actual HTML on Mercado Livre
         promotion_items = soup.find_all(class_="promotion-item")
         for item in promotion_items:
             try:
