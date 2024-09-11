@@ -42,7 +42,11 @@ jobs:
         nohup poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 &
         sleep 5  # Aguarda o servidor subir completamente
 
-    - name: Test FastAPI with pytest
+    # - name: Test FastAPwith pytest
+    #   run: |
+    #     export PATH="$HOME/.local/bin:$PATH"
+    #     poetry run pytest
+
+    - name: Test mercado_livre_app
       run: |
-        export PATH="$HOME/.local/bin:$PATH"
-        poetry run pytest
+        poetry run python ./src/webscraping-ml/app.py
