@@ -5,6 +5,7 @@ description = ""
 authors = ["tabatha wiggers <tatchiwiggers@gmail.com>"]
 readme = "README.md"
 
+
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.112.2"
@@ -16,7 +17,9 @@ bs4 = "^0.0.2"
 pyvirtualdisplay = "^3.0"
 undetected-chromedriver = "^3.5.5"
 setuptools = "^74.1.2"
-
+pydantic = "^2.9.1"
+email-validator = "^2.2.0"
+pydentic = "^0.0.1.dev3"
 
 [build-system]
 requires = ["poetry-core"]

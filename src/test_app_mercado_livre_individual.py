@@ -5,12 +5,12 @@ Modificado em: 09/09/2024
 
 """
 
-#test mercado livre
+# test mercado livre
 
-#https://www.mercadolivre.com.br/ofertas
+# https://www.mercadolivre.com.br/ofertas
 
 
-'''
+"""
 
 TODO:
     - armazenas todas as informações em listas. OK
@@ -22,190 +22,199 @@ TODO:
 
     - testar script em docker
 
-'''
+"""
 
 import os
-import warnings
-warnings.filterwarnings('ignore')
+import logging
+from typing import List, Optional
+from time import sleep
 
+from pydantic import HttpUrl
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from bs4 import BeautifulSoup
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from pyvirtualdisplay import Display
 from selenium.webdriver.chrome.options import Options
 import undetected_chromedriver as uc
-from time import sleep
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-
-VAR_PATH_PRINCIPAL = os.getcwd()
-VAR_PATH_DRIVER = "chromedriver.exe"
-VAR_TIPO_SELENIUM = 2
-VAR_SLEEP_10 = 10
+from pyvirtualdisplay import Display
+from pydantic import BaseModel, EmailStr
+from bs4 import BeautifulSoup
+import requests
+import json
 
 
-def pfun_chrome_get_driver(
-        tipo=1,
-        mostrar_driver=True
-        ):
+logging.basicConfig(level=logging.INFO)
 
-    if (tipo == 1):
 
-        VAR_PATH_CHROME_DRIVER = f"{VAR_PATH_PRINCIPAL}/{VAR_PATH_DRIVER}"
+class WebDriverConfig(BaseModel):
+    driver_path: str
+    headless: bool = False
 
-        options = webdriver.ChromeOptions()
-        options.add_argument("--start-maximized")
-        options.add_argument("--disable-extensions")
-        options.add_argument("--incognito")
 
-        if not mostrar_driver:
-            driver = uc.Chrome(
-                driver_executable_path=VAR_PATH_CHROME_DRIVER,
+class ProductData(BaseModel):
+    product_link: str
+    product_image: str
+    product_title: str
+    previous_price: str
+    current_price: str
+    discount: str
+    installments: str
+    seller: str
+
+
+class UserBase(BaseModel):
+    username: str
+    email: EmailStr
+
+
+class UserCreate(UserBase):
+    password: str
+
+
+class User(UserBase):
+    id: int
+
+
+class SeleniumDriverManager:
+    def __init__(self, driver_type: int = 1, show_browser: bool = True):
+        self.driver_type = driver_type
+        self.show_browser = show_browser
+        self.driver: Optional[webdriver.Chrome] = None
+        self.display: Optional[Display] = None
+
+    def get_driver(self):
+        var_path_principal = os.getcwd()
+        var_path_driver = "chromedriver.exe"
+
+        if self.driver_type == 1:
+            var_path_chrome_driver = os.path.join(var_path_principal, var_path_driver)
+            options = webdriver.ChromeOptions()
+            options.add_argument("--start-maximized")
+            options.add_argument("--disable-extensions")
+            options.add_argument("--incognito")
+
+            self.driver = uc.Chrome(
+                driver_executable_path=var_path_chrome_driver,
                 options=options,
-                headless=True
-                )
-        else:
-            driver = uc.Chrome(
-                driver_executable_path=VAR_PATH_CHROME_DRIVER,
-                options=options
-                )
-        driver.execute_script('return navigator.webdriver')
-
-        display = None
-
-    elif (tipo == 2):
-
-        display = Display(visible=0, size=(1200,800))
-        display.start()
-        print('\n>>>>> INICIANDO DISPLAY!!! <<<<<\n')
-
-        options = Options()
-        options.add_argument("--start-maximized")
-        options.add_argument("--disable-extensions")
-        options.add_argument("--incognito")
-
-        VAR_PATH_CHROME_DRIVER = f'{VAR_PATH_PRINCIPAL}/src/chromedriver'
-        driver = uc.Chrome(
-            driver_executable_path=VAR_PATH_CHROME_DRIVER,
-            options=options
+                headless=not self.show_browser,
             )
-        driver.execute_script('return navigator.webdriver')
+            self.driver.execute_script("return navigator.webdriver")
 
-    else:
-        print('DRIVER NAO LOCALIZADO!!!')
-        driver, display = None, None
+        elif self.driver_type == 2:
+            self.display = Display(visible=0, size=(1200, 800))
+            self.display.start()
+            logging.info("Starting virtual display.")
 
-    return driver, display
+            options = Options()
+            options.add_argument("--start-maximized")
+            options.add_argument("--disable-extensions")
+            options.add_argument("--incognito")
+
+            var_path_chrome_driver = os.path.join(
+                var_path_principal, "src/chromedriver"
+            )
+            self.driver = uc.Chrome(
+                driver_executable_path=var_path_chrome_driver, options=options
+            )
+            self.driver.execute_script("return navigator.webdriver")
+
+        else:
+            logging.error("Driver type not recognized.")
+            self.driver, self.display = None, None
+
+        return self.driver, self.display
+
+    def close_driver(self):
+        if self.driver:
+            self.driver.close()
+            self.driver.quit()
+            logging.info("Driver closed.")
+
+        if self.display:
+            self.display.stop()
+            logging.info("Virtual display stopped.")
 
 
-def pfun_driver_check_connection(driver, url, tempo_espera=2):
-    check_conection = True
-    while check_conection:
+class WebScraper:
+    def __init__(self):
+        pass
+
+    def get_html(self, url: str):
         try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.text
+        except requests.RequestException as e:
+            logging.error(f"Error fetching URL {url}: {e}")
+            return None
 
-            driver.get(url)
-            check_conection = False
+    def scrape_products(self, url: str) -> List[ProductData]:
+        products = []
+        html = self.get_html(url)
 
-        except:
-            pass
-    sleep(tempo_espera)
+        if not html:
+            return products
 
+        soup = BeautifulSoup(html, "html.parser")
 
-def pfun_driver_get_cookie(driver):
-
-    try:
-
-        button = WebDriverWait(driver, VAR_SLEEP_10).until(
-            EC.element_to_be_clickable((
-                By.CSS_SELECTOR,
-                'button[data-testid="action:understood-button"]'
-                ))
-        )
-        button.click()
-
-    except:
-        print('\n>>>>> ERRO AO INICIALIZAR COOKIES!!!\n')
-
-
-def pfun_close_selenium_driver(driver, display):
-
-    try:
-
-        driver.close()
-        driver.quit()
-
-    except:
-        pass
-
-    try:
-
-        #pausando o display
-        if display != None:
-            print('\n>>>>> PAUSANDO DISPLAY!!! <<<<<\n')
-            display.stop()
-
-    except:
-        pass
-
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-url_href = 'https://www.mercadolivre.com.br/ofertas'
-
-
-try:
-    driver, display = pfun_chrome_get_driver(VAR_TIPO_SELENIUM)
-except Exception as e:
-    print(e)
-    driver, display = None, None
-
-if driver != None:
-
-    list_products = []
-    list_erros = []
-    check_count = True
-
-    pfun_driver_check_connection(driver, url_href)
-    pfun_driver_get_cookie(driver)
-
-    next_button = driver.find_element(By.CLASS_NAME, "andes-pagination__button--next")
-    a_tag = next_button.find_element(By.TAG_NAME, "a")
-    svg_element = a_tag.find_element(By.TAG_NAME, "svg")
-    svg_height = int(svg_element.get_attribute('height'))
-
-    for count in range(0, svg_height):
-        if  count > 0:
+        # Modify the class names and structure as per the actual HTML on Mercado Livre
+        promotion_items = soup.find_all(class_="promotion-item")
+        for item in promotion_items:
             try:
-                next_page = driver.find_element(By.CLASS_NAME, 'andes-pagination__button--next')
-                url = next_page.find_element(By.TAG_NAME, 'a')
-                url_href = url.get_attribute('href')
+                product_link = item.find(class_="promotion-item__link-container")[
+                    "href"
+                ]
+                product_image = item.find(class_="promotion-item__img")["src"]
+                product_title = item.find(class_="promotion-item__title").text.strip()
+                previous_price = (
+                    item.find(class_="andes-money-amount--previous").text.strip()
+                    if item.find(class_="andes-money-amount--previous")
+                    else ""
+                )
+                current_price = item.find(
+                    class_="andes-money-amount--cents-superscript"
+                ).text.strip()
+                discount = (
+                    item.find(class_="promotion-item__discount-text").text.strip()
+                    if item.find(class_="promotion-item__discount-text")
+                    else ""
+                )
+                installments = (
+                    item.find(class_="promotion-item__installments").text.strip()
+                    if item.find(class_="promotion-item__installments")
+                    else ""
+                )
+                seller = (
+                    item.find(class_="promotion-item__seller").text.strip()
+                    if item.find(class_="promotion-item__seller")
+                    else ""
+                )
 
-            except:
-                check_count = False
+                data = ProductData(
+                    product_link=product_link,
+                    product_image=product_image,
+                    product_title=product_title,
+                    previous_price=previous_price,
+                    current_price=current_price,
+                    discount=discount,
+                    installments=installments,
+                    seller=seller,
+                )
+                products.append(data)
+            except Exception as e:
+                logging.error(f"Error extracting product data: {e}")
 
-        print(url_href)
+        return products
 
-        pfun_driver_check_connection(driver, url_href)
-        pfun_driver_get_cookie(driver)
 
-        divs_promotion_itens = driver.find_elements(By.CLASS_NAME, "promotion-item")
-        for item in divs_promotion_itens:
-            try:
-                data = {}
-                data['product_link'] = item.find_element(By.CLASS_NAME, "promotion-item__link-container").get_attribute("href")
-                data['product_image'] = item.find_element(By.CLASS_NAME, "promotion-item__img").get_attribute("src")
-                data['product_title'] = item.find_element(By.CLASS_NAME, "promotion-item__title").text
-                data['previous_price'] = item.find_element(By.CLASS_NAME, "andes-money-amount--previous").text
-                data['current_price'] = item.find_element(By.CLASS_NAME, "andes-money-amount--cents-superscript").text
-                data['discount'] = item.find_element(By.CLASS_NAME, "promotion-item__discount-text").text
-                data['installments'] = item.find_element(By.CLASS_NAME, "promotion-item__installments").text
-                data['seller'] = item.find_element(By.CLASS_NAME, "promotion-item__seller").text
+if __name__ == "__main__":
+    url = "https://www.mercadolivre.com.br/ofertas"
+    scraper = WebScraper()
 
-                list_products.append(data)
+    products = scraper.scrape_products(url)
 
-            except:
-                list_erros.append(data)
-
-    pfun_close_selenium_driver(driver, display)
+    logging.info(f"Scraped {len(products)} products.")
+    if products:
+        for product in products:
+            # Convert the product to a dictionary and format the JSON with indent
+            logging.info(json.dumps(product.dict(), indent=2))
