@@ -21,4 +21,31 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        docker-compose build
+        docker-compose up --build -d
+
+    - name: Run Python Script inside Docker [app_mercado_livre]
+      run: |
+        docker-compose exec app_mercado_livre python /app/app.py
+
+    - name: Generate UUID Version
+      id: uuid_version
+      run: echo "::set-output name=uuid::$(uuidgen)"
+
+    - name: Tag and Push Docker Image
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_REGISTRY: ${{ vars.DOCKER_REGISTRY }}
+        DOCKER_IMAGE_NAME: app_mercado_livre
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        IMAGE_NAME="${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}"
+        UUID_VERSION=${{ steps.uuid_version.outputs.uuid }}
+        docker tag ${{ env.DOCKER_IMAGE_NAME }}:latest $IMAGE_NAME:latest
+        docker tag ${{ env.DOCKER_IMAGE_NAME }}:latest $IMAGE_NAME:$UUID_VERSION
+        docker push $IMAGE_NAME:latest
+        docker push $IMAGE_NAME:$UUID_VERSION
+
+    - name: Stop Container
+      run: |
+        docker-compose down
