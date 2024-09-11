@@ -49,4 +49,4 @@ jobs:
 
     - name: Test mercado_livre_app
       run: |
-        poetry run python ./src/webscraping-ml/app.py
+        poetry run python /src/webscraping-ml/app.py
