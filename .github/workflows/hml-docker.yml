@@ -19,13 +19,16 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y docker-compose
 
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
     - name: Build Docker Image
       run: |
         docker-compose up --build -d
 
     - name: Run Python Script inside Docker [app_mercado_livre]
       run: |
-        docker-compose exec -T app_mercado_livre python /app/app.py
+        docker compose run app_mercado_livre
 
     - name: Generate UUID Version
       id: uuid_version
@@ -41,11 +44,5 @@ jobs:
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
         IMAGE_NAME="${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}"
         UUID_VERSION=${{ steps.uuid_version.outputs.uuid }}
-        docker tag ${{ env.DOCKER_IMAGE_NAME }}:latest $IMAGE_NAME:latest
-        docker tag ${{ env.DOCKER_IMAGE_NAME }}:latest $IMAGE_NAME:$UUID_VERSION
-        docker push $IMAGE_NAME:latest
-        docker push $IMAGE_NAME:$UUID_VERSION
-
-    - name: Stop Container
-      run: |
-        docker-compose down
+        docker tag app_mercado_livre:latest tatchisabato/app_mercado_livre:latest
+        docker push tatchisabato/app_mercado_livre:latest
