@@ -19,6 +19,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y docker-compose
 
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
     - name: Build Docker Image
       run: |
         docker-compose up --build -d
