@@ -44,5 +44,5 @@ jobs:
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
         IMAGE_NAME="${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}"
         UUID_VERSION=${{ steps.uuid_version.outputs.uuid }}
-        docker tag app_mercado_livre:latest tatchisabato/app_mercado_livre:latest
-        docker push tatchisabato/app_mercado_livre:latest
+        docker tag app_mercado_livre:latest "${IMAGE_NAME}"
+        docker push "${IMAGE_NAME}"
