@@ -46,6 +46,7 @@ import json
 logging.basicConfig(level=logging.INFO)
 # test
 
+
 class BeautifulSoupDriverManager:
     def __init__(self, driver_type: int = 1, show_browser: bool = True):
         self.driver_type = driver_type
