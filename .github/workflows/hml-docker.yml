@@ -1,4 +1,4 @@
-name: FastApi CI Homolog - Docker
+name: CI Homolog - Docker
 
 on:
   pull_request:
