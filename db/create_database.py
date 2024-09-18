@@ -2,10 +2,6 @@ import snowflake.connector
 import os
 import params
 
-# Snowflake connection configuration
-# SNOWFLAKE_USER = os.getenv("SNOWFLAKE_USER")
-# SNOWFLAKE_PASSWORD = os.getenv("SNOWFLAKE_PASSWORD")
-# SNOWFLAKE_ACCOUNT = os.getenv("SNOWFLAKE_ACCOUNT")
 
 print(params.SNOWFLAKE_ACCOUNT)
 # SQL to create database
