@@ -20,6 +20,9 @@ setuptools = "^74.1.2"
 pydantic = "^2.9.1"
 email-validator = "^2.2.0"
 pydentic = "^0.0.1.dev3"
+snowflake-connector-python = "^3.12.2"
+python-dotenv = "^1.0.1"
+snowflake-sqlalchemy = "^1.6.1"
 
 [build-system]
 requires = ["poetry-core"]

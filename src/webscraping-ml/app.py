@@ -10,20 +10,6 @@ Modificado em: 09/09/2024
 # https://www.mercadolivre.com.br/ofertas
 
 
-"""
-
-TODO:
-    - armazenas todas as informações em listas. OK
-    - capturar todas as páginas. OK
-    - refatorar todo o código utilizando de funções e boas praticas.
-    - tratar possiveis erros em produção. OK
-    - obter os valores corretamente. OK
-    - EXTRA: trocar selenium por BeautifulSoup.
-
-    - testar script em docker
-
-"""
-
 import os
 import logging
 from typing import List, Optional
@@ -45,6 +31,7 @@ import json
 
 logging.basicConfig(level=logging.INFO)
 # test
+
 
 class BeautifulSoupDriverManager:
     def __init__(self, driver_type: int = 1, show_browser: bool = True):
