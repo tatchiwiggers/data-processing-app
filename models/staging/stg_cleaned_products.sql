@@ -25,6 +25,7 @@ WITH raw_scraped_products AS (
         ) AS num_installments,
 
         -- Extract the installment value, handle empty strings, remove 'R$', and cast to decimal
+        -- If num_installments is 1, set installment_value to current_price
         COALESCE(
             CASE 
                 WHEN SPLIT_PART(installments, 'x', 2) = '' THEN 0.0
@@ -33,9 +34,10 @@ WITH raw_scraped_products AS (
                 AS DECIMAL)
             END, 
             0.0
-        ) AS installment_value,
+        ) AS raw_installment_value,
 
-        seller
+        -- Fill null or empty values in seller with 'não informado'
+        COALESCE(NULLIF(seller, ''), 'não informado') AS seller
     FROM {{ ref('raw_scraped_products') }}
 )
 
@@ -48,6 +50,10 @@ SELECT
     current_price,
     discount,
     num_installments,
-    installment_value,
+    -- Set installment_value to current_price when num_installments is 1
+    CASE 
+        WHEN num_installments = 1 THEN current_price
+        ELSE raw_installment_value
+    END AS installment_value,
     seller
 FROM raw_scraped_products
