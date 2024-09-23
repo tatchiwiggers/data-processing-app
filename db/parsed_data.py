@@ -1,32 +1,18 @@
-# import necessary packages
 import snowflake.connector
 import logging
-import json
 import os
 import requests
 from bs4 import BeautifulSoup
 from typing import List
-# from src.webscraping-ml import ProductData  # Ensure ProductData matches Snowflake schema
 import params
-
-from pydantic import BaseModel
-
-
-class WebDriverConfig(BaseModel):
-    driver_path: str
-    headless: bool = False
+import sys
+import os
 
 
-class ProductData(BaseModel):
-    product_link: str
-    product_image: str
-    product_title: str
-    previous_price: str
-    current_price: str
-    discount: str
-    installments: str
-    seller: str
-
+# Add the project root to the sys.path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+from src.webscraping_ml.schema import ProductData
 
 
 # Snowflake Insert Function
@@ -39,7 +25,7 @@ def insert_scraped_data(data: ProductData):
             account=params.SNOWFLAKE_ACCOUNT,
             warehouse=params.WAREHOUSE,
             database=params.SNOWFLAKE_DATABASE,
-            schema=params.SNOWFLAKE_SCHEMA
+            schema=params.SNOWFLAKE_SCHEMA,
         )
 
         # Clean price fields
@@ -65,7 +51,7 @@ def insert_scraped_data(data: ProductData):
             current_price,
             data.discount,
             data.installments,
-            data.seller
+            data.seller,
         )
 
         # Execute the insert query
@@ -81,11 +67,13 @@ def insert_scraped_data(data: ProductData):
         if conn:
             conn.close()
 
+
 # Helper function to clean price
 def clean_price(price_str: str):
     if not price_str or price_str == "":
         return None
-    return float(price_str.replace('R$', '').replace(',', '').strip())
+    return float(price_str.replace("R$", "").replace(",", "").strip())
+
 
 # WebScraper class (unchanged)
 class WebScraper:
@@ -110,14 +98,34 @@ class WebScraper:
 
         for item in promotion_items:
             try:
-                product_link = item.find(class_="promotion-item__link-container")["href"]
+                product_link = item.find(class_="promotion-item__link-container")[
+                    "href"
+                ]
                 product_image = item.find(class_="promotion-item__img")["src"]
                 product_title = item.find(class_="promotion-item__title").text.strip()
-                previous_price = item.find(class_="andes-money-amount--previous").text.strip() if item.find(class_="andes-money-amount--previous") else ""
-                current_price = item.find(class_="andes-money-amount--cents-superscript").text.strip()
-                discount = item.find(class_="promotion-item__discount-text").text.strip() if item.find(class_="promotion-item__discount-text") else ""
-                installments = item.find(class_="promotion-item__installments").text.strip() if item.find(class_="promotion-item__installments") else ""
-                seller = item.find(class_="promotion-item__seller").text.strip() if item.find(class_="promotion-item__seller") else ""
+                previous_price = (
+                    item.find(class_="andes-money-amount--previous").text.strip()
+                    if item.find(class_="andes-money-amount--previous")
+                    else ""
+                )
+                current_price = item.find(
+                    class_="andes-money-amount--cents-superscript"
+                ).text.strip()
+                discount = (
+                    item.find(class_="promotion-item__discount-text").text.strip()
+                    if item.find(class_="promotion-item__discount-text")
+                    else ""
+                )
+                installments = (
+                    item.find(class_="promotion-item__installments").text.strip()
+                    if item.find(class_="promotion-item__installments")
+                    else ""
+                )
+                seller = (
+                    item.find(class_="promotion-item__seller").text.strip()
+                    if item.find(class_="promotion-item__seller")
+                    else ""
+                )
 
                 data = ProductData(
                     product_link=product_link,
@@ -134,6 +142,7 @@ class WebScraper:
                 logging.error(f"Error extracting product data: {e}")
 
         return products
+
 
 # Main function to scrape and insert data
 if __name__ == "__main__":
