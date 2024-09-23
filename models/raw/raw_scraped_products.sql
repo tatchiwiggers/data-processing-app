@@ -8,4 +8,4 @@ SELECT
     discount,
     installments,
     seller
-FROM ecommerce_db.ecommerce.scraped_products
+FROM ecommerce_db.raw.raw_scraped_products
