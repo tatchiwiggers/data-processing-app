@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app_fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app_fastapi
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    depends_on:
+      - app_mercado_livre
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+    restart: always
+  app_mercado_livre:
+    image: app_mercado_livre:latest
+    build:
+      context: .
+      dockerfile: docker/webscraping-ml/Dockerfile
+    container_name: app_mercado_livre
+    environment:
+      - PYTHONUNBUFFERED=1
+    # command: poetry run python app.py
