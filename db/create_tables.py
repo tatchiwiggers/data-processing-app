@@ -3,7 +3,7 @@ import params
 
 # SQL to create the `scraped_products` table
 create_table_sql = """
-CREATE OR REPLACE TABLE ecommerce.scraped_products (
+CREATE OR REPLACE TABLE raw.raw_scraped_products (
     product_id INT AUTOINCREMENT, -- Unique product identifier
     product_link STRING NOT NULL, -- URL of the product
     product_image STRING,         -- URL of the product image
@@ -40,7 +40,7 @@ def create_table():
 
             # Execute the SQL to create the table
             cursor.execute(create_table_sql)
-            print("Table 'scraped_products' created successfully!")
+            print("Table 'raw_scraped_products' created successfully!")
 
     except snowflake.connector.errors.Error as e:
         print(f"Snowflake error occurred: {e}")
