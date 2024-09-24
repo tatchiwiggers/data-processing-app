@@ -24,6 +24,10 @@ snowflake-connector-python = "^3.12.2"
 python-dotenv = "^1.0.1"
 snowflake-sqlalchemy = "^1.6.1"
 apache-airflow = "^2.10.1"
+dbt-core = "^1.8.6"
+dbt-snowflake = "^1.8.3"
+azure-cosmos = "^4.7.0"
+pendulum = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core"]
