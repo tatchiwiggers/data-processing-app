@@ -16,7 +16,7 @@ def get_data_from_snowflake(**conn_params):
         cur = conn.cursor()
 
         # Query para importar a tabela FINAL
-        query = "SELECT * FROM ECOMMERCE_DB.DBT_TWIGGERS.STG_SCRAPED_PRODUCTS;"
+        query = "SELECT * FROM ECOMMERCE_DB.DBT_TWIGGERS_DE.MART_SCRAPED_PRODUCTS;"
 
         # Executar a query e carregar os dados em um DataFrame
         cur.execute(query)
@@ -40,4 +40,4 @@ def get_data_from_snowflake(**conn_params):
         end_date = time()
         execution_time = round(end_date - start_date, 2)
 
-    return check_snowflake, sf_updated_at[0], execution_time
+    return check_snowflake, sf_updated_at[0], execution_time, df
