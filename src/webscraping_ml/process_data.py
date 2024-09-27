@@ -23,7 +23,7 @@ SNOWFLAKE_SCHEMA = os.getenv("SNOWFLAKE_SCHEMA")
 # Function to insert product data into Snowflake
 def insert_product_data(cursor, product_data: ProductData):
     insert_query = """
-    INSERT INTO ecommerce_db.raw.raw_scraped_products (
+    INSERT INTO ecommerce_db.raw_data.raw_scraped_data_source (
         product_link, product_image, product_title, previous_price, current_price, discount, installments, seller
     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
     """

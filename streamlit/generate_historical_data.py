@@ -16,10 +16,6 @@ def generate_historical_data():
     }
     return pd.DataFrame(data)
 
-# Função para mostrar o histórico de execuções
-def show_run_history(df):
-    st.subheader("📅 Run History")
-    st.dataframe(df[['Run Timestamp', 'Status', 'Errors']])
 
 # Função para mostrar tendências de desempenho
 def show_performance_trends(df):
@@ -33,10 +29,12 @@ def show_performance_trends(df):
     ax.set_title("Performance Trends Over Time")
     ax.legend()
     ax.grid(True)
+    plt.xticks(rotation=45)
     st.pyplot(fig)
 
 # Função para mostrar tendências de volume de dados
 def show_data_volume_trends(df):
+    st.write("----------------------------")
     st.subheader("📊 Data Volume Trends")
 
     fig, ax = plt.subplots(figsize=(10, 4))
@@ -45,32 +43,19 @@ def show_data_volume_trends(df):
     ax.set_ylabel("Data Volume (records)")
     ax.set_title("Data Volume Trends Over Time")
     ax.grid(True)
+    plt.xticks(rotation=45)
     st.pyplot(fig)
 
 # Função principal para a página de dados históricos
 def show_historical_data():
     st.title("📜 Historical Data")
+    st.write("----------------------------")
 
     # Gerar dados históricos (substitua com a coleta de dados reais)
     df = generate_historical_data()
-
-    # Exibir o histórico de execuções
-    show_run_history(df)
 
     # Exibir tendências de desempenho
     show_performance_trends(df)
 
     # Exibir tendências de volume de dados
     show_data_volume_trends(df)
-
-# Função principal para controle de navegação entre páginas
-def main():
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Historical Data"])
-
-    if page == "Historical Data":
-        show_historical_data()
-
-# Executar o app
-if __name__ == "__main__":
-    main()
