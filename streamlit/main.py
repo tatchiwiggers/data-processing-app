@@ -1,9 +1,9 @@
 import streamlit as st
-from show_etl_dashboard import show_etl_dashboard
+
 
 # Main app navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.selectbox("Go to", ["Home", "ETL Overview Dashboard", "Detailed Stages Information"])
+page = st.sidebar.selectbox("Go to", ["Home", "Airflow Pipeline Dashboard", "ETL Overview Dashboard", "Detailed Stages Information", "Historical Data", "Customizable Views"])
 
 if page == "Home":
     # Home page content
@@ -60,9 +60,22 @@ if page == "Home":
     st.markdown("----")
     st.write("For more details, visit the **ETL Overview Dashboard** using the sidebar.")
 
+elif page == "Airflow Pipeline Dashboard":
+    import airflow_pipeline
+    airflow_pipeline.show_airflow_pipeline_page()
+
 elif page == "ETL Overview Dashboard":
-    show_etl_dashboard()
+    import show_etl_dashboard
+    show_etl_dashboard.show_etl_dashboard()
 
 elif page == "Detailed Stages Information":
     import show_detailed_stages_info
     show_detailed_stages_info.show_detailed_stages_info()
+
+elif page == "Historical Data":
+    import generate_historical_data
+    generate_historical_data.show_historical_data()
+
+elif page == "Customizable Views":
+    import get_etl_logs
+    get_etl_logs.show_customizable_views_page()

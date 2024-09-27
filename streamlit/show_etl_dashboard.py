@@ -91,7 +91,7 @@ def show_etl_dashboard():
     if st.button('Trigger DBT Job'):
         check_dbt, dbt_execution_time = trigger_dbt_job()
 
-    check_snowflake, sf_update_at, sf_execution_time = get_data_from_snowflake(**conn_params)
+    check_snowflake, sf_update_at, sf_execution_time, df = get_data_from_snowflake(**conn_params)
     etl_data_status_sf = "Success" if check_snowflake else "Failed"
     etl_data_status_dbt = "Success" if check_dbt else "Failed"
 
