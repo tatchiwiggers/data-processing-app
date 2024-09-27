@@ -1,0 +1,13 @@
+ecommerce_data_analysis:
+  outputs:
+    dev:
+      account: eikqune-ha60087
+      database: ECOMMERCE_DB
+      password: Porcupine2406@
+      role: ACCOUNTADMIN
+      schema: PUBLIC
+      threads: 10
+      type: snoflake
+      user: tatchiwiggers
+      warehouse: ECOMMERCE_WH
+  target: dev
