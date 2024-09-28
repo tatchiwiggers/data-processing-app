@@ -1,8 +1,34 @@
 import streamlit as st
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import random
+
+# Apply custom CSS for enhanced styling
+st.markdown("""
+    <style>
+        .main-header {
+            font-size: 36px;
+            font-weight: bold;
+            color: #003366;
+            text-align: center;
+        }
+        .sub-header {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-top: 20px;
+        }
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 5px solid #0066cc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Function to simulate Airflow pipeline data
 def generate_airflow_pipeline_data():
@@ -19,38 +45,37 @@ def generate_airflow_pipeline_data():
     }
 
     return pd.DataFrame(pipeline_data)
-
+st.write("-----------------------------------")
 # Function to display Airflow pipeline status
-def show_airflow_pipeline(df):
-    st.subheader("🚀 Airflow Pipeline Status")
+st.markdown("<br>", unsafe_allow_html=True)
 
-    # Display task statuses
-    st.dataframe(df[['Task Name', 'Status', 'Start Time', 'End Time', 'Duration (min)']])
+def show_airflow_pipeline():
+    st.markdown("<div class='sub-header'>🚀 Airflow Pipeline Status</div>", unsafe_allow_html=True)
 
-    # Visualize pipeline status
-    fig, ax = plt.subplots(figsize=(10, 4))
-    for index, row in df.iterrows():
-        color = 'green' if row['Status'] == 'Success' else 'red' if row['Status'] == 'Failed' else 'orange'
-        ax.barh(row['Task Name'], row['Duration (min)'], color=color, edgecolor='black')
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    ax.set_xlabel("Duration (min)")
-    ax.set_ylabel("Task Name")
-    ax.set_title("Airflow Pipeline Task Durations")
-    st.pyplot(fig)
 
-# Function to show the main page
-def show_airflow_pipeline_page():
-    st.title("Airflow Pipeline Dashboard")
+    from streamlit.components.v1 import html
 
-    # Button to run the pipeline
-    if st.button("Run Pipeline"):
-        # Generate new pipeline data when the button is clicked
-        df = generate_airflow_pipeline_data()
 
-        # Show the Airflow pipeline status
-        show_airflow_pipeline(df)
-    else:
-        st.write("Click the 'Run Pipeline' button to execute the pipeline and see the results.")
+    open_script= """
+        <script type="text/javascript">
+            window.open('http://localhost:8080', '_blank').focus();
+        </script>
+    """
+
+    if st.button('test'):
+        html(open_script)
+
+
+
+
+st.write("""
+This dashboard allows you to simulate and visualize the status of an Airflow pipeline.
+Click the button below to run the pipeline and see the results.
+""")
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    show_airflow_pipeline_page()
+    show_airflow_pipeline()

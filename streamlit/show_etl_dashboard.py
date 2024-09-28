@@ -21,12 +21,13 @@ conn_params = {
 
 # Define the function to trigger and monitor the DBT job
 def trigger_dbt_job():
-    start_date = time()
-    check_dbt = False
     DBT_CLOUD_API_TOKEN = os.getenv("DBT_CLOUD_API_TOKEN")
     ACCOUNT_ID = os.getenv("DBT_CLOUD_ACCOUNT_ID")
     PROJECT_ID = os.getenv("DBT_CLOUD_PROJECT_ID")
     JOB_ID = os.getenv("DBT_CLOUD_JOB_ID")
+    start_date = time()
+    check_dbt = False
+
 
     headers = {
         "Authorization": f"Token {DBT_CLOUD_API_TOKEN}",

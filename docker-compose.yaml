@@ -89,6 +89,17 @@ x-airflow-common:
       condition: service_healthy
 
 services:
+  app_streamlit:
+    image: app_streamlit:latest
+    build:
+      context: .
+      dockerfile: docker/streamlit/Dockerfile
+    container_name: app_streamlit
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8501:8501"
+
   app_fastapi:
     build:
       context: .

@@ -116,47 +116,53 @@ class WebScraper:
 
         promotion_items = soup.select('div[class*="poly-card"]')
         for item in promotion_items:
-            try:
-                product_link = item.find(class_="poly-component__title")["href"]
-                product_image = item.find(class_="poly-component__picture")["data-src"]
-                product_title = item.find(class_="poly-component__title").text.strip()
-                previous_price = (
-                    item.find(class_="andes-money-amount--previous").text.strip()
-                    if item.find(class_="andes-money-amount--previous")
-                    else ""
-                )
-                current_price = item.find(
-                    class_="andes-money-amount--cents-superscript"
-                ).text.strip()
-                discount = (
-                    item.find(class_="andes-money-amount__discount").text.strip()
-                    if item.find(class_="andes-money-amount__discount")
-                    else ""
-                )
-                installments = (
-                    item.find(class_="poly-price__installments").text.strip()
-                    if item.find(class_="poly-price__installments")
-                    else ""
-                )
-                seller = (
-                    item.find(class_="poly-component__seller").text.strip()
-                    if item.find(class_="poly-component__seller")
-                    else ""
-                )
 
-                data = ProductData(
-                    product_link=product_link,
-                    product_image=product_image,
-                    product_title=product_title,
-                    previous_price=previous_price,
-                    current_price=current_price,
-                    discount=discount,
-                    installments=installments,
-                    seller=seller,
-                )
-                products.append(data)
-            except Exception as e:
-                logging.error(f"Error extracting product data: {e}")
+            product_link = item.find(class_="poly-component__title")
+            product_link = product_link["href"] if product_link else ""
+
+            product_image = item.find(class_="poly-component__picture")
+            product_image = product_image["data-src"] if product_image else ""
+            product_title = item.find(class_="poly-component__title")
+
+            product_title = product_title.text.strip() if product_title else ""
+
+            previous_price = (
+                item.find(class_="andes-money-amount--previous").text.strip()
+                if item.find(class_="andes-money-amount--previous")
+                else ""
+            )
+            current_price = item.find(
+                class_="andes-money-amount--cents-superscript"
+            )
+
+            current_price = current_price.text.strip() if current_price else ""
+            discount = (
+                item.find(class_="andes-money-amount__discount").text.strip()
+                if item.find(class_="andes-money-amount__discount")
+                else ""
+            )
+            installments = (
+                item.find(class_="poly-price__installments").text.strip()
+                if item.find(class_="poly-price__installments")
+                else ""
+            )
+            seller = (
+                item.find(class_="poly-component__seller").text.strip()
+                if item.find(class_="poly-component__seller")
+                else ""
+            )
+
+            data = ProductData(
+                product_link=product_link,
+                product_image=product_image,
+                product_title=product_title,
+                previous_price=previous_price,
+                current_price=current_price,
+                discount=discount,
+                installments=installments,
+                seller=seller,
+            )
+            products.append(data)
 
         return products
 
