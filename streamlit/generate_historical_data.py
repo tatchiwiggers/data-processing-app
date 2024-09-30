@@ -6,13 +6,14 @@ from datetime import datetime, timedelta
 # Função para gerar dados históricos de exemplo (substitua com dados reais)
 def generate_historical_data():
     now = datetime.now()
+    start_date = datetime(2024, 9, 30)
     data = {
-        "Run Timestamp": [now - timedelta(days=i) for i in range(10)],
+        "Run Timestamp": [(start_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(9, -1, -1)],
         "Status": ["Success", "Success", "Failed", "Success", "Success", "Failed", "Success", "Success", "Success", "Success"],
         "Errors": [None, None, "Timeout", None, None, "Connection Error", None, None, None, None],
         "Scraping Time (min)": [10, 9, 12, 8, 7, 10, 9, 8, 7, 6],
         "Loading Time (min)": [5, 6, 7, 5, 4, 6, 5, 5, 4, 3],
-        "Data Volume (records)": [15000, 16000, 12000, 17000, 18000, 14000, 17500, 18000, 18500, 19000],
+        "Data Volume (records)": [300, 260, 280, 230, 270, 240, 255, 225, 265, 215],
     }
     return pd.DataFrame(data)
 

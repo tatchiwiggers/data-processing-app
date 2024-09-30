@@ -56,7 +56,8 @@ def show_airflow_pipeline():
 
 
     from streamlit.components.v1 import html
-
+    from airflow.api.client.local_client import Client
+    # Embed the Airflow UI using an iframe
 
     open_script= """
         <script type="text/javascript">
@@ -64,9 +65,9 @@ def show_airflow_pipeline():
         </script>
     """
 
-    if st.button('test'):
+    if st.button('Run Airflow Dag'):
         html(open_script)
-
+        st.write("Airflow DAG is running...")
 
 
 

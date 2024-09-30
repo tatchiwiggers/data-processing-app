@@ -40,7 +40,7 @@ st.markdown("""
 
 # Main app navigation
 st.sidebar.title("Navigation", "sidebar-title")
-page = st.sidebar.selectbox("Go to", ["Home", "Airflow Pipeline Dashboard", "ETL Overview Dashboard", "Detailed Stages Information", "Historical Data", "Customizable Views"], format_func=lambda x: f"📄 {x}")
+page = st.sidebar.selectbox("Go to", ["Home", "Airflow Pipeline Dashboard", "ETL Overview Dashboard", "Historical Data", "Customizable Views"], format_func=lambda x: f"📄 {x}")
 
 if page == "Home":
     # Home page content
@@ -123,10 +123,6 @@ elif page == "Airflow Pipeline Dashboard":
 elif page == "ETL Overview Dashboard":
     import show_etl_dashboard
     show_etl_dashboard.show_etl_dashboard()
-
-elif page == "Detailed Stages Information":
-    import show_detailed_stages_info
-    show_detailed_stages_info.show_detailed_stages_info()
 
 elif page == "Historical Data":
     import generate_historical_data

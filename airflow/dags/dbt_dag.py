@@ -54,7 +54,7 @@ with DAG(
     dag_id='dbt_cloud_job_trigger',
     default_args=default_args,
     description='DAG para disparar e monitorar um job no DBT Cloud',
-    schedule_interval=None,
+    schedule_interval='@daily',
     start_date=days_ago(1),
     catchup=False,
 ) as dag:
